@@ -1,3 +1,5 @@
 ﻿  ConsoleApplication2.c
-C:\Users\User\source\repos\ConsoleApplication2\ConsoleApplication2.c(35,25): warning C4013: 'time' undefined; assuming extern returning int
+C:\Users\User\source\repos\ConsoleApplication2\ConsoleApplication2.c(36,25): warning C4013: 'time' undefined; assuming extern returning int
+C:\Users\User\source\repos\ConsoleApplication2\ConsoleApplication2.c(54,32): warning C4047: 'function': 'unsigned int' differs in levels of indirection from 'void *'
+C:\Users\User\source\repos\ConsoleApplication2\ConsoleApplication2.c(54,28): warning C4024: '_beginthread': different types for formal and actual parameter 2
   ConsoleApplication2.vcxproj -> C:\Users\User\source\repos\ConsoleApplication2\Debug\ConsoleApplication2.exe

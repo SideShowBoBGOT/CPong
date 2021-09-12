@@ -3,6 +3,7 @@
 #include<math.h>
 #include<stdlib.h>
 #include<Windows.h>
+#include <process.h>
 
 
 const int WIDTH = 31;
@@ -50,49 +51,58 @@ int main()
 
     int gameIsLaunched=1;
     int addThreadIsOn = 1;
+    _beginthread(MoveBall, NULL, (void*)&b);
+
     while(gameIsLaunched==1){
         Input(&p1, &p2);
         LogicPlayer(&p1, &p2);
-        MoveBall(&b);
+        
         LogicBall(&p1, &p2, &b);
         DrawDungeon(30, 20, &p1, &p2, &b);
         
         system("cls");
     }
     
-    
+    _endthread();
     return 0;
 }
 void MoveBall(struct Ball* b) {
-    if ((*b).direction==UpLeft) {
-        (*b).ballX--;
-        (*b).ballY--;
+    while(1){
+        if ((*b).direction == UpLeft) {
+            (*b).ballX--;
+            (*b).ballY--;
+        }
+        if ((*b).direction == UpRight) {
+            (*b).ballX++;
+            (*b).ballY--;
+        }
+        if ((*b).direction == DownLeft) {
+            (*b).ballX--;
+            (*b).ballY++;
+        }
+        if ((*b).direction == DownRight) {
+            (*b).ballX++;
+            (*b).ballY++;
+        }
+        Sleep(150);
     }
-    if ((*b).direction==UpRight) {
-        (*b).ballX++;
-        (*b).ballY--;
-    }
-    if ((*b).direction==DownLeft) {
-        (*b).ballX--;
-        (*b).ballY++;
-    }
-    if ((*b).direction==DownRight) {
-        (*b).ballX++;
-        (*b).ballY++;
-    }
-    Sleep(100);
 }
 void LogicBall(struct Player *p1, struct Player *p2, struct Ball *b){
-    
+    time_t t;
+    srand((unsigned)time(&t));
     if    (((*b).ballX == (*p1).headX + 1 && (*b).ballY == (*p1).headY)
         || ((*b).ballX == (*p1).headX + 1 && (*b).ballY == (*p1).headY + 1)
         || ((*b).ballX == (*p1).headX + 1 && (*b).ballY == (*p1).headY + 2)
         || ((*b).ballX == (*p1).headX && (*b).ballY == (*p1).headY - 1)
         || ((*b).ballX == (*p1).headX && (*b).ballY == (*p1).headY + 3)) {
         if ((*b).direction == UpLeft)
-            (*b).direction = DownRight;
+        {
+            (*b).direction = rand() % 2;
+        }
         if ((*b).direction == DownLeft)
-            (*b).direction = UpRight;
+        {
+            (*b).direction = rand() % 2;
+        }
     }
     if    (((*b).ballX == (*p2).headX - 1 && (*b).ballY == (*p2).headY)
         || ((*b).ballX == (*p2).headX - 1 && (*b).ballY == (*p2).headY + 1)
@@ -100,17 +110,20 @@ void LogicBall(struct Player *p1, struct Player *p2, struct Ball *b){
         || ((*b).ballX == (*p2).headX && (*b).ballY == (*p2).headY - 1)
         || ((*b).ballX == (*p2).headX && (*b).ballY == (*p2).headY + 3)) {
         if ((*b).direction == UpRight)
-            (*b).direction = DownLeft;
-        if ((*b).direction == DownRight)
-            (*b).direction = UpLeft;
+        {
+            (*b).direction = 2 + (rand()%2);
+        }
+        if ((*b).direction == DownRight) {
+            (*b).direction = 2 + (rand() % 2);
+        }
     }
     if ((*b).ballY == 1 && ((*b).direction == UpRight))
         (*b).direction = DownRight;
     if ((*b).ballY == 1 && ((*b).direction == UpLeft))
         (*b).direction = DownLeft;
-    if ((*b).ballY == HEIGHT-1 && ((*b).direction == DownRight))
+    if ((*b).ballY == HEIGHT-2 && ((*b).direction == DownRight))
         (*b).direction = UpRight;
-    if ((*b).ballY == HEIGHT-1 && ((*b).direction == DownLeft))
+    if ((*b).ballY == HEIGHT-2 && ((*b).direction == DownLeft))
         (*b).direction = UpLeft;
         
     if ((*b).ballX == 1) {
@@ -124,6 +137,10 @@ void LogicBall(struct Player *p1, struct Player *p2, struct Ball *b){
         (*b).ballX = WIDTH / 2;
         (*b).ballY = HEIGHT / 2;
         (*b).direction = rand() % 3;
+    }
+    if ((*b).ballX<0 || (*b).ballY<0 || (*b).ballX>WIDTH || (*b).ballY>HEIGHT) {
+        (*b).ballX = WIDTH / 2;
+        (*b).ballY = HEIGHT / 2;
     }
 }
 void LogicPlayer(struct Player* p1, struct Player* p2) {
@@ -166,12 +183,19 @@ void DrawDungeon(int width, int height, struct Player *p1, struct Player *p2, st
     struct Ball B = *b;
     for (int i = 0; i < height; i++) {
         for (int j = 0; j < width;j++) {
-            if (i == 0||i==height-1) {
-                printf("%c", '#');
-                if (j == width - 1) {
-                    printf("\n");
+            
+                if (i == 0||i==height-1) {
+
+                    if (i == 0 && j == width - 1) {
+                        printf("#\tX: %d\tY: %d\n", B.ballX, B.ballY);
+                    }
+                    else {
+                        printf("%c", '#');
+                        if (j == width - 1) {
+                            printf("\n");
+                        }
+                    }
                 }
-            }
             else {
                 
                 if (j == 0 || j == width - 1) {
